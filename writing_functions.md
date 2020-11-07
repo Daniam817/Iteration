@@ -104,12 +104,12 @@ update function
 ``` r
 z.scores = function(x) {
   
-  if(!is.numeric(x)){
+  if (!is.numeric(x)){
     stop("Input must be numeric")
   }
   
 
-  if(length(x) < 3){
+  if (length(x) < 3){
     stop("Input must have at least 3 numbers")
   }
   z = (x - mean(x)) / sd(x)
@@ -117,7 +117,7 @@ z.scores = function(x) {
 }
 ```
 
-These should guve errors
+These should give errors
 
 ``` r
 z.scores(3)
@@ -142,3 +142,89 @@ z.scores(c(TRUE ,TRUE ,FALSE ,TRUE))
 ```
 
     ## Error in z.scores(c(TRUE, TRUE, FALSE, TRUE)): Input must be numeric
+
+# Multiple outputs
+
+``` r
+mean.and.Sd = function(x) {
+  
+  if (!is.numeric(x)){
+    stop("Input must be numeric")
+  }
+
+  if (length(x) < 3){
+    stop("Input must have at least 3 numbers")
+  }
+  
+mean.x = mean(x)
+sd.x = sd(x)
+
+tibble(
+  mean = mean.x,
+  sd = sd.x
+)
+
+}
+```
+
+Check that function works
+
+``` r
+x.vec = rnorm(100, mean = 3, sd = 5)
+mean.and.Sd(x.vec)
+```
+
+    ## # A tibble: 1 x 2
+    ##    mean    sd
+    ##   <dbl> <dbl>
+    ## 1  3.46  4.29
+
+# Multiple Inputs
+
+I’d like to do this with a function
+
+``` r
+sim.data =
+  tibble(
+    x = rnorm(n = 100, mean = 4, sd = 3)
+  )
+
+sim.data %>% 
+  summarize(
+    mean = mean(x),
+    sd = sd(x)
+)
+```
+
+    ## # A tibble: 1 x 2
+    ##    mean    sd
+    ##   <dbl> <dbl>
+    ## 1  3.85  3.11
+
+``` r
+sim.mean.sd = function(n, mu, sigma) {
+  
+# Generates a data frame that follows the n,mu, sigma from the function command
+  
+  sim.data =
+  tibble(
+    x = rnorm(n = n, mean = mu, sd = sigma)
+  )
+
+# Takes the information from the tibble and summarizes(outputs) the mean an standard deviation from it.
+
+sim.data %>% 
+  summarize(
+    mean = mean(x),
+    sd = sd(x)
+)
+  
+}
+
+sim.mean.sd(100,6,3)
+```
+
+    ## # A tibble: 1 x 2
+    ##    mean    sd
+    ##   <dbl> <dbl>
+    ## 1  6.24  3.02

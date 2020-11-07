@@ -1,0 +1,74 @@
+---
+title: "writing functions"
+author: "Daniel Ojeranti"
+date: "11/7/2020"
+output: github_document
+---
+
+```{r}
+library(tidyverse)
+library(rvest)
+```
+
+# Somthing simple
+
+```{r}
+set.seed(1)
+
+x.vec = rnorm(25, mean = 5, sd = 3)
+
+(x.vec - mean(x.vec)) / sd(x.vec)
+
+```
+
+ Want a function to compute z scores
+
+```{r}
+z.scores = function(x) {
+  
+  z = (x - mean(x)) / sd(x)
+  z
+}
+
+z.scores(x.vec)
+```
+
+Trying function on other things
+
+```{r,error=TRUE}
+z.scores(3)
+z.scores("Mehoy Nehoy")
+z.scores(mtcars)
+z.scores(c(TRUE ,TRUE ,FALSE ,TRUE))
+
+```
+
+update function
+
+```{r}
+
+z.scores = function(x) {
+  
+  if(!is.numeric(x)){
+    stop("Input must be numeric")
+  }
+  
+
+  if(length(x) < 3){
+    stop("Input must have at least 3 numbers")
+  }
+  z = (x - mean(x)) / sd(x)
+  z
+}
+
+
+```
+
+
+```{r, error=TRUE}
+z.scores(3)
+z.scores("Mehoy Nehoy")
+z.scores(mtcars)
+z.scores(c(TRUE ,TRUE ,FALSE ,TRUE))
+
+```

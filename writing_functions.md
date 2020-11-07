@@ -307,6 +307,42 @@ read.page.reviews(dynomite.url)
 
 Lets read a few pages of reviews
 
+From Step 1:
+
+``` r
+read.page.reviews = function(url) {
+  
+  html = read_html(url)
+  
+  review_titles = 
+    html %>%
+    html_nodes(".a-text-bold span") %>%
+    html_text()
+  
+  review_stars = 
+    html %>%
+    html_nodes("#cm_cr-review_list .review-rating") %>%
+    html_text() %>%
+    str_extract("^\\d") %>%
+    as.numeric()
+  
+  review_text = 
+    html %>%
+    html_nodes(".review-text-content span") %>%
+    html_text() %>% 
+    str_replace_all("\n", "") %>% 
+    str_trim()
+  
+  reviews =
+    tibble(
+    title = review_titles,
+    stars = review_stars,
+    text = review_text
+  )
+
+}
+```
+
 ``` r
 dynomite.url.base = "https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_arp_d_viewopt_rvwer?ie=UTF8&reviewerType=avp_only_reviews&sortBy=recent&pageNumber="
 
@@ -320,9 +356,20 @@ dynamite.reviews =
     read.page.reviews(dynomite.urls[4]),
     read.page.reviews(dynomite.urls[5])
 )   
-
-dynamite.reviews
 ```
 
-    ## # A tibble: 0 x 3
-    ## # ... with 3 variables: title <chr>, stars <dbl>, text <chr>
+# Mean scoping example
+
+``` r
+f = function(x){
+  z = x + y
+  z
+}
+
+x = 1
+y = 2
+
+f(x = y)
+```
+
+    ## [1] 4

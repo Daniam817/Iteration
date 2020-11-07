@@ -64,7 +64,7 @@ z.scores = function(x) {
 
 ```
 
-
+ These should guve errors
 ```{r, error=TRUE}
 z.scores(3)
 z.scores("Mehoy Nehoy")

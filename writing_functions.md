@@ -117,6 +117,8 @@ z.scores = function(x) {
 }
 ```
 
+These should guve errors
+
 ``` r
 z.scores(3)
 ```

@@ -7,14 +7,14 @@ Daniel Ojeranti
 library(tidyverse)
 ```
 
-    ## -- Attaching packages ---------------------------- tidyverse 1.3.0 --
+    ## -- Attaching packages ------------------------------- tidyverse 1.3.0 --
 
     ## v ggplot2 3.3.2     v purrr   0.3.4
     ## v tibble  3.0.3     v dplyr   1.0.2
     ## v tidyr   1.1.2     v stringr 1.4.0
     ## v readr   1.3.1     v forcats 0.5.0
 
-    ## -- Conflicts ------------------------------- tidyverse_conflicts() --
+    ## -- Conflicts ---------------------------------- tidyverse_conflicts() --
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
@@ -220,7 +220,6 @@ sim.data %>%
 )
   
 }
-
 sim.mean.sd(100,6,3)
 ```
 
@@ -228,3 +227,102 @@ sim.mean.sd(100,6,3)
     ##    mean    sd
     ##   <dbl> <dbl>
     ## 1  6.24  3.02
+
+## Review Napolean Dynomite
+
+``` r
+url = "https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_arp_d_viewopt_rvwer?ie=UTF8&reviewerType=avp_only_reviews&sortBy=recent&pageNumber=1"
+
+dynamite.html = read_html(url)
+
+review_titles = 
+  dynamite.html %>%
+  html_nodes(".a-text-bold span") %>%
+  html_text()
+
+review_stars = 
+  dynamite.html %>%
+  html_nodes("#cm_cr-review_list .review-rating") %>%
+  html_text() %>%
+  str_extract("^\\d") %>%
+  as.numeric()
+
+review_text = 
+  dynamite.html %>%
+  html_nodes(".review-text-content span") %>%
+  html_text() %>% 
+  str_replace_all("\n", "") %>% 
+  str_trim()
+
+reviews = tibble(
+  title = review_titles,
+  stars = review_stars,
+  text = review_text
+)
+```
+
+What about the next page of reviews… Lets turn that code into a function
+
+``` r
+read.page.reviews = function(url) {
+  
+  html = read_html(url)
+  
+  review_titles = 
+    html %>%
+    html_nodes(".a-text-bold span") %>%
+    html_text()
+  
+  review_stars = 
+    html %>%
+    html_nodes("#cm_cr-review_list .review-rating") %>%
+    html_text() %>%
+    str_extract("^\\d") %>%
+    as.numeric()
+  
+  review_text = 
+    html %>%
+    html_nodes(".review-text-content span") %>%
+    html_text() %>% 
+    str_replace_all("\n", "") %>% 
+    str_trim()
+  
+  reviews =
+    tibble(
+    title = review_titles,
+    stars = review_stars,
+    text = review_text
+  )
+
+}
+```
+
+Test the function
+
+``` r
+dynomite.url = "https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_arp_d_viewopt_rvwer?ie=UTF8&reviewerType=avp_only_reviews&sortBy=recent&pageNumber=1"
+
+read.page.reviews(dynomite.url)
+```
+
+Lets read a few pages of reviews
+
+``` r
+dynomite.url.base = "https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_arp_d_viewopt_rvwer?ie=UTF8&reviewerType=avp_only_reviews&sortBy=recent&pageNumber="
+
+dynomite.urls = str_c(dynomite.url.base, 1:5)
+
+dynamite.reviews = 
+  bind_rows(
+    read.page.reviews(dynomite.urls[1]),
+    read.page.reviews(dynomite.urls[2]),
+    read.page.reviews(dynomite.urls[3]),
+    read.page.reviews(dynomite.urls[4]),
+    read.page.reviews(dynomite.urls[5])
+)   
+
+dynamite.reviews
+```
+
+    ## # A tibble: 0 x 3
+    ## # ... with 3 variables: title <chr>, stars <dbl>, text <chr>

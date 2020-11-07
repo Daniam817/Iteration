@@ -144,8 +144,107 @@ sim.data %>%
 )
   
 }
-
 sim.mean.sd(100,6,3)
+
+```
+
+## Review Napolean Dynomite
+
+```{r}
+url = "https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_arp_d_viewopt_rvwer?ie=UTF8&reviewerType=avp_only_reviews&sortBy=recent&pageNumber=1"
+
+dynamite.html = read_html(url)
+
+review_titles = 
+  dynamite.html %>%
+  html_nodes(".a-text-bold span") %>%
+  html_text()
+
+review_stars = 
+  dynamite.html %>%
+  html_nodes("#cm_cr-review_list .review-rating") %>%
+  html_text() %>%
+  str_extract("^\\d") %>%
+  as.numeric()
+
+review_text = 
+  dynamite.html %>%
+  html_nodes(".review-text-content span") %>%
+  html_text() %>% 
+  str_replace_all("\n", "") %>% 
+  str_trim()
+
+reviews = tibble(
+  title = review_titles,
+  stars = review_stars,
+  text = review_text
+)
+```
+
+What about the next page of reviews...
+Lets turn that code into a function
+
+```{r}
+read.page.reviews = function(url) {
+  
+  html = read_html(url)
+  
+  review_titles = 
+    html %>%
+    html_nodes(".a-text-bold span") %>%
+    html_text()
+  
+  review_stars = 
+    html %>%
+    html_nodes("#cm_cr-review_list .review-rating") %>%
+    html_text() %>%
+    str_extract("^\\d") %>%
+    as.numeric()
+  
+  review_text = 
+    html %>%
+    html_nodes(".review-text-content span") %>%
+    html_text() %>% 
+    str_replace_all("\n", "") %>% 
+    str_trim()
+  
+  reviews =
+    tibble(
+    title = review_titles,
+    stars = review_stars,
+    text = review_text
+  )
+
+}
+
+```
+
+Test the function
+
+```{r}
+dynomite.url = "https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_arp_d_viewopt_rvwer?ie=UTF8&reviewerType=avp_only_reviews&sortBy=recent&pageNumber=1"
+
+read.page.reviews(dynomite.url)
+
+```
+
+Lets read a few pages of reviews
+
+```{r}
+dynomite.url.base = "https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_arp_d_viewopt_rvwer?ie=UTF8&reviewerType=avp_only_reviews&sortBy=recent&pageNumber="
+
+dynomite.urls = str_c(dynomite.url.base, 1:5)
+
+dynamite.reviews = 
+  bind_rows(
+    read.page.reviews(dynomite.urls[1]),
+    read.page.reviews(dynomite.urls[2]),
+    read.page.reviews(dynomite.urls[3]),
+    read.page.reviews(dynomite.urls[4]),
+    read.page.reviews(dynomite.urls[5])
+)   
+
+dynamite.reviews
 
 ```
 

@@ -448,6 +448,12 @@ output[[i]] = mean.and.sd(list.norms[[i]])
 
 }</code></pre>
 </div>
+<div id="trying-map" class="section level2">
+<h2>Trying map</h2>
+<pre class="r"><code>output = map(list.norms, mean.and.sd)</code></pre>
+<p>What if I want a different function…?</p>
+<pre class="r"><code>output =  map(list.norms, IQR)</code></pre>
+</div>
 
 
 

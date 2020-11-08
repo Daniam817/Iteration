@@ -94,3 +94,15 @@ output[[i]] = mean.and.sd(list.norms[[i]])
 
 ```
 
+## Trying map 
+
+```{r}
+output = map(list.norms, mean.and.sd)
+```
+
+What if I want a different function...?
+
+```{r}
+output =  map(list.norms, IQR)
+```
+

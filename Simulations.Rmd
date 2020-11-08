@@ -1,0 +1,74 @@
+---
+title: "Simulation"
+author: "Daniel Ojeranti"
+date: "11/8/2020"
+output: github_document
+---
+
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(rvest)
+set.seed(1)
+```
+
+# Lets simulate something
+
+```{r}
+sim.mean.sd = function(n, mu = 2, sigma = 3) {
+  
+  sim_data = tibble(
+    x = rnorm(n, mean = mu, sd = sigma),
+  )
+  
+  sim_data %>% 
+    summarize(
+      mu.hat = mean(x),
+      sigma.hat = sd(x)
+    )
+}
+
+# I can simulate by running this
+sim.mean.sd(30)
+
+
+# simulating a lot
+# Start with a for loop
+
+output = vector("list", 100)
+
+for (i in 1:100) {
+  output[[i]] = sim.mean.sd(30)
+}
+
+sim.results = bind_rows(output)
+
+# Lets use a loop function
+
+sim.results = 
+  rerun(100, sim.mean.sd(30, 2, 3)) %>% 
+  bind_rows()
+
+
+sim.results %>% 
+  ggplot(aes(x = mu.hat)) + 
+  geom_density()
+
+sim.results %>% 
+  summarize(
+   avg.samp.mean = mean(mu.hat),
+   avg.samp.sd = sd(sigma.hat)
+)
+
+sim.results %>% 
+  pivot_longer(
+    mu.hat:sigma.hat,
+    names_to = "parameter", 
+    values_to = "estimate") %>% 
+  group_by(parameter) %>% 
+  summarize(
+    emp_mean = mean(estimate),
+    emp_sd = sd(estimate)) %>% 
+  knitr::kable(digits = 3)
+```
+

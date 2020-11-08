@@ -2,7 +2,7 @@
 title: "Iteration and list columns"
 author: "Daniel Ojeranti"
 date: "11/8/2020"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}

@@ -106,3 +106,54 @@ What if I want a different function...?
 output =  map(list.norms, IQR)
 ```
 
+## Different types of maps
+
+```{r}
+output =  map_dbl(list.norms, IQR)
+
+output =  map_df(list.norms, mean.and.sd, .id = "input")
+```
+
+## List columns
+
+```{r}
+list.norms = 
+  list(
+    a = rnorm(20, 3, 1),
+    b = rnorm(40, 0, 5),
+    c = rnorm(30, 10, .2),
+    d = rnorm(20, -3, 1)
+  )
+
+listcol.df =
+  tibble(
+    name = c("a", "b", "c", "d"),
+    samp = list.norms
+  )
+
+listcol.df %>% pull(name)
+listcol.df %>% pull(samp)
+
+listcol.df$samp[[1]] # First element from my list column
+
+
+mean.and.sd(listcol.df$samp[[1]]) #A pplying the function to first element
+
+```
+
+# Maping
+
+```{r}
+map(listcol.df$samp, mean.and.sd)
+
+
+listcol.df = 
+  listcol.df %>% 
+  mutate(summary = map(samp, mean.and.sd))
+
+listcol.df
+```
+
+
+
+
